@@ -5,6 +5,68 @@
 #include <forward_list>
 #include <list>
 
+//
+
+class SquareIterator 
+{
+public:
+	using iterator_category = std::random_access_iterator_tag;
+	using value_type = int;
+	using difference_type = std::ptrdiff_t;
+
+	explicit SquareIterator(int* _ptr) : ptr{_ptr} {}
+
+	value_type operator*() const
+	{
+		return (*ptr) * (*ptr);
+	}
+
+	int* operator->() const
+	{
+		return ptr;
+	}
+	
+	//prefix increment
+	SquareIterator& operator++()
+	{
+		++ptr;
+		return *this;
+	}
+
+	//postfix increment
+	SquareIterator operator++(int)
+	{
+		SquareIterator tmp = *this;
+		++ptr;
+		return tmp;
+	}
+	
+	SquareIterator& operator+=(difference_type diff)
+	{
+		ptr += diff;
+		return *this;
+	}
+
+	SquareIterator operator+(difference_type diff) const 
+	{
+		return SquareIterator(ptr + diff);
+	}
+
+	value_type operator[](difference_type diff)
+	{
+		return *(ptr + diff) * *(ptr + diff);
+	}
+	
+	bool operator!=(const SquareIterator& other)
+	{
+		return this->ptr != other.ptr;
+	}
+
+private:
+	int* ptr;
+};
+
+
 template<typename _Iter>
 void print_iterable(_Iter begin, _Iter end)
 {
@@ -55,10 +117,19 @@ int main(int argc, char** argv)
 	}
 	std::cout << '\n';
 	
-	//random access iterator
-	
+	std::vector<int> _vec = {1,2,3,4,5};
+
+	SquareIterator begin{_vec.data()};
+	SquareIterator end{_vec.data() + vec.size()};
+
+
+	for(auto it = begin; it != end; ++it)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << '\n';
 
 
 	return 0;
 }
-
+std::cout << '\n';
