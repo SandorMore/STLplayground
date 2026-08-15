@@ -5,7 +5,18 @@
 #include <forward_list>
 #include <list>
 
-//
+template<typename T>
+class CustomAllocator
+{
+	CustomAllocator() noexcept {}
+
+	template<typename U>
+	T* allocate(size_t n) 
+	{
+		return static_cast<T>(::operator new(n * sizeof(T)));
+	}
+
+};
 
 class SquareIterator 
 {
@@ -127,6 +138,7 @@ int main(int argc, char** argv)
 	{
 		std::cout << *it << " ";
 	}
+	
 	std::cout << '\n';
 
 
