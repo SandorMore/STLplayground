@@ -8,12 +8,38 @@
 template<typename T>
 class CustomAllocator
 {
+public:
+	using value_type = T;
+
 	CustomAllocator() noexcept {}
 
 	template<typename U>
-	T* allocate(size_t n) 
+	CustomAllocator(const CustomAllocator<U>&) noexcept;
+
+	T* allocate(size_t n) noexcept 
 	{
-		return static_cast<T>(::operator new(n * sizeof(T)));
+		std::cout << "Allocating" << "\n";
+		return static_cast<T*>(::operator new(n * sizeof(T)));
+	}
+
+	void deallocate(T* p, size_t n) noexcept
+	{
+		std::cout << "Deallocating" << "\n";
+		::operator delete(p);
+	}
+
+	template<typename U, typename... Args>
+	void construct(U *p, Args&&... args)
+	{
+		std::cout << "Constructing" << "\n";
+		new (p) U(std::forward<Args>(args)...);
+	}
+
+	template<typename U>
+	void destroy(U* p)
+	{
+		std::cout << "Destroying" << "\n";
+		p->~U();
 	}
 
 };
@@ -142,6 +168,15 @@ int main(int argc, char** argv)
 	std::cout << '\n';
 
 
+	std::vector<int, CustomAllocator<int>> customvec;
+	
+	for(size_t i {}; i < 10; ++i)
+	{
+		customvec.push_back(i);
+	}
+
+	std::cout << "Clearing the vector";
+	customvec.clear();
+
 	return 0;
 }
-std::cout << '\n';
